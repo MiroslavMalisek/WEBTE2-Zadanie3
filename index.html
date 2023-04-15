@@ -1,20 +1,16 @@
 <!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>WebSocket Client Example</title>
-  <link rel="stylesheet" href="vendor/css/style.css">
+    <meta charset="UTF-8">
+    <title>Pong</title>
+    <link rel="stylesheet" href="vendor/css/gameStyle.css">
 </head>
-<body>
-<div id="number">&nbsp;</div>
-<div id="log"></div>
-<div>
-  <input id="msg" type="text" />
-  <button id="send">Send</button>
-  <button id="quit">Quit</button>
-</div>
+<body onload="startGame()">
 
-<script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.6.0.js"></script>
-<script src="vendor/script/script.js" charset="UTF-8"> </script>
+
+<script src="vendor/script/game_board/borderComponent.js" charset="UTF-8"> </script>
+<script src="vendor/script/gameLogicScript.js" charset="UTF-8"> </script>
+
 
 </body>
 </html>

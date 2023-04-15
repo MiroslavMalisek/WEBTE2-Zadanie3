@@ -23,6 +23,15 @@ function generateNumberConnectionsJsonMessage($n_connections) {
     return json_encode($obj);
 }
 
+function sendMgsToAll($connection, $data){
+    $obj = new stdClass();
+    $obj->msg = "$data";
+    foreach($connection->worker->connections as $conn)
+    {
+        $conn->send(json_encode($obj));
+    }
+}
+
 
 
 // SSL context.
@@ -50,7 +59,7 @@ $n_connections = 0;
 $ws_worker->onWorkerStart = function($ws_worker)
 {   $GLOBALS['userdata']=0;
     // Timer every 5 seconds
-    Timer::add(1, function()use($ws_worker)
+    /*Timer::add(1, function()use($ws_worker)
     {
         $n_conn = count($ws_worker->connections);
         // Iterate over connections and send the time
@@ -58,7 +67,7 @@ $ws_worker->onWorkerStart = function($ws_worker)
         {
             $connection->send(generateNumberConnectionsJsonMessage($n_conn));
         }
-    });
+    });*/
 
 
     // Emitted when new connection come
@@ -68,8 +77,9 @@ $ws_worker->onWorkerStart = function($ws_worker)
         // Emitted when websocket handshake done
         $connection->onWebSocketConnect = function($connection)
         {
-            echo "New connection\n";
-            echo count($connection->worker->connections);
+            //echo "New connection\n";
+
+            //echo count($connection->worker->connections);
             foreach($connection->worker->connections as $connection)
             {
                 $connection->send(generateNumberConnectionsJsonMessage(count($connection->worker->connections)));
@@ -80,9 +90,11 @@ $ws_worker->onWorkerStart = function($ws_worker)
 
     $ws_worker->onMessage = function($connection, $data)
     {
-        $GLOBALS['userdata']=$data;
+        //$GLOBALS['userdata']=$data;
+        echo $data;
+        sendMgsToAll($connection, $data);
         // Send hello $data
-        $connection->send(generateNumberConnectionsJsonMessage(count($connection->worker->connections)));
+        //$connection->send(generateNumberConnectionsJsonMessage(count($connection->worker->connections)));
     };
 
     // Emitted when connection closed

@@ -1,0 +1,58 @@
+2023-04-14 21:09:41 pid:1211 Workerman[server2.php] start in DEBUG mode
+2023-04-14 21:11:36 pid:1211 Workerman[server2.php] stopping ...
+2023-04-14 21:11:36 pid:1211 Workerman[server2.php] has been stopped
+2023-04-14 21:13:05 pid:1216 Workerman[server2.php] start in DEBUG mode
+2023-04-14 21:13:19 pid:1216 Workerman[server2.php] stopping ...
+2023-04-14 21:13:19 pid:1216 Workerman[server2.php] has been stopped
+2023-04-14 23:00:01 pid:1669 Workerman[server2.php] start in DEBUG mode
+2023-04-14 23:00:08 pid:1670 Error: Attempt to assign property "onWebSocketConnect" on null in /var/www/site152.webte.fei.stuba.sk/zadanie3/server2.php:56
+Stack trace:
+#0 /var/www/site152.webte.fei.stuba.sk/zadanie3/vendor/workerman/workerman/Worker.php(2570): {closure}()
+#1 /var/www/site152.webte.fei.stuba.sk/zadanie3/vendor/workerman/workerman/Events/Select.php(311): Workerman\Worker->acceptConnection()
+#2 /var/www/site152.webte.fei.stuba.sk/zadanie3/vendor/workerman/workerman/Worker.php(1629): Workerman\Events\Select->loop()
+#3 /var/www/site152.webte.fei.stuba.sk/zadanie3/vendor/workerman/workerman/Worker.php(1423): Workerman\Worker::forkOneWorkerForLinux()
+#4 /var/www/site152.webte.fei.stuba.sk/zadanie3/vendor/workerman/workerman/Worker.php(1397): Workerman\Worker::forkWorkersForLinux()
+#5 /var/www/site152.webte.fei.stuba.sk/zadanie3/vendor/workerman/workerman/Worker.php(560): Workerman\Worker::forkWorkers()
+#6 /var/www/site152.webte.fei.stuba.sk/zadanie3/server2.php(76): Workerman\Worker::runAll()
+#7 {main}
+2023-04-14 23:00:08 pid:1669 worker[none:1670] exit with status 64000
+2023-04-14 23:00:08 pid:1671 Error: Attempt to assign property "onWebSocketConnect" on null in /var/www/site152.webte.fei.stuba.sk/zadanie3/server2.php:56
+Stack trace:
+#0 /var/www/site152.webte.fei.stuba.sk/zadanie3/vendor/workerman/workerman/Worker.php(2570): {closure}()
+#1 /var/www/site152.webte.fei.stuba.sk/zadanie3/vendor/workerman/workerman/Events/Select.php(311): Workerman\Worker->acceptConnection()
+#2 /var/www/site152.webte.fei.stuba.sk/zadanie3/vendor/workerman/workerman/Worker.php(1629): Workerman\Events\Select->loop()
+#3 /var/www/site152.webte.fei.stuba.sk/zadanie3/vendor/workerman/workerman/Worker.php(1423): Workerman\Worker::forkOneWorkerForLinux()
+#4 /var/www/site152.webte.fei.stuba.sk/zadanie3/vendor/workerman/workerman/Worker.php(1397): Workerman\Worker::forkWorkersForLinux()
+#5 /var/www/site152.webte.fei.stuba.sk/zadanie3/vendor/workerman/workerman/Worker.php(1779): Workerman\Worker::forkWorkers()
+#6 /var/www/site152.webte.fei.stuba.sk/zadanie3/vendor/workerman/workerman/Worker.php(1715): Workerman\Worker::monitorWorkersForLinux()
+#7 /var/www/site152.webte.fei.stuba.sk/zadanie3/vendor/workerman/workerman/Worker.php(562): Workerman\Worker::monitorWorkers()
+#8 /var/www/site152.webte.fei.stuba.sk/zadanie3/server2.php(76): Workerman\Worker::runAll()
+#9 {main}
+2023-04-14 23:00:08 pid:1669 worker[none:1671] exit with status 64000
+2023-04-14 23:02:16 pid:1669 Workerman[server2.php] stopping ...
+2023-04-14 23:02:16 pid:1669 Workerman[server2.php] has been stopped
+2023-04-14 23:02:19 pid:1673 Workerman[server2.php] start in DEBUG mode
+2023-04-14 23:02:23 pid:1674 ArgumentCountError: Too few arguments to function {closure}(), 1 passed in /var/www/site152.webte.fei.stuba.sk/zadanie3/vendor/workerman/workerman/Worker.php on line 2570 and exactly 2 expected in /var/www/site152.webte.fei.stuba.sk/zadanie3/server2.php:53
+Stack trace:
+#0 /var/www/site152.webte.fei.stuba.sk/zadanie3/vendor/workerman/workerman/Worker.php(2570): {closure}()
+#1 /var/www/site152.webte.fei.stuba.sk/zadanie3/vendor/workerman/workerman/Events/Select.php(311): Workerman\Worker->acceptConnection()
+#2 /var/www/site152.webte.fei.stuba.sk/zadanie3/vendor/workerman/workerman/Worker.php(1629): Workerman\Events\Select->loop()
+#3 /var/www/site152.webte.fei.stuba.sk/zadanie3/vendor/workerman/workerman/Worker.php(1423): Workerman\Worker::forkOneWorkerForLinux()
+#4 /var/www/site152.webte.fei.stuba.sk/zadanie3/vendor/workerman/workerman/Worker.php(1397): Workerman\Worker::forkWorkersForLinux()
+#5 /var/www/site152.webte.fei.stuba.sk/zadanie3/vendor/workerman/workerman/Worker.php(560): Workerman\Worker::forkWorkers()
+#6 /var/www/site152.webte.fei.stuba.sk/zadanie3/server2.php(77): Workerman\Worker::runAll()
+#7 {main}
+2023-04-14 23:02:23 pid:1673 worker[none:1674] exit with status 64000
+2023-04-14 23:02:23 pid:1675 ArgumentCountError: Too few arguments to function {closure}(), 1 passed in /var/www/site152.webte.fei.stuba.sk/zadanie3/vendor/workerman/workerman/Worker.php on line 2570 and exactly 2 expected in /var/www/site152.webte.fei.stuba.sk/zadanie3/server2.php:53
+Stack trace:
+#0 /var/www/site152.webte.fei.stuba.sk/zadanie3/vendor/workerman/workerman/Worker.php(2570): {closure}()
+#1 /var/www/site152.webte.fei.stuba.sk/zadanie3/vendor/workerman/workerman/Events/Select.php(311): Workerman\Worker->acceptConnection()
+#2 /var/www/site152.webte.fei.stuba.sk/zadanie3/vendor/workerman/workerman/Worker.php(1629): Workerman\Events\Select->loop()
+#3 /var/www/site152.webte.fei.stuba.sk/zadanie3/vendor/workerman/workerman/Worker.php(1423): Workerman\Worker::forkOneWorkerForLinux()
+#4 /var/www/site152.webte.fei.stuba.sk/zadanie3/vendor/workerman/workerman/Worker.php(1397): Workerman\Worker::forkWorkersForLinux()
+#5 /var/www/site152.webte.fei.stuba.sk/zadanie3/vendor/workerman/workerman/Worker.php(1779): Workerman\Worker::forkWorkers()
+#6 /var/www/site152.webte.fei.stuba.sk/zadanie3/vendor/workerman/workerman/Worker.php(1715): Workerman\Worker::monitorWorkersForLinux()
+#7 /var/www/site152.webte.fei.stuba.sk/zadanie3/vendor/workerman/workerman/Worker.php(562): Workerman\Worker::monitorWorkers()
+#8 /var/www/site152.webte.fei.stuba.sk/zadanie3/server2.php(77): Workerman\Worker::runAll()
+#9 {main}
+2023-04-14 23:02:23 pid:1673 worker[none:1675] exit with status 64000

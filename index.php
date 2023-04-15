@@ -1,3 +1,3 @@
 <?php
 $xhi="jl";
-echo Sp;
+echo $xhi;

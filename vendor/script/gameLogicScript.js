@@ -1,55 +1,69 @@
-//import {BorderComponent} from 'game_board/borderComponent.js'
+let ws;
 
-var borderComponents = [];
+$(document).ready(function () {
+    ws = new WebSocket("wss://site152.webte.fei.stuba.sk:9000");
+
+    ws.onopen = function () { log("Connection established"); };
+    ws.onerror = function (error) { log("Unknown WebSocket Error " + JSON.stringify(error)); };
+    ws.onmessage = function (e) {
+        var data = JSON.parse(e.data);
+        console.log((data));
+        //log("< " + data.msg);
+        /*document.getElementById("number").innerHTML = data.n_connections + "<br>";*/
+
+    };
+    ws.onclose = function () { log("Connection closed - Either the host or the client has lost connection"); }
+
+
+});
+
+
 function startGame() {
     myGameArea.start();
-    //x start of border at canvas
-    let x = 50;
-    //y start of border at canvas
-    let y = 50;
-    //corners
-    const borderComponent = new BorderComponent(myGameArea, x, y);
-    borderComponents.push(borderComponent);
-    borderComponents.push(new BorderComponent(myGameArea, x+30+0.5, y));
-    borderComponents.push(new BorderComponent(myGameArea, x, y+30+0.5));
-
-    borderComponents.push(new BorderComponent(myGameArea, x+8*30+0.5, y));
-    borderComponents.push(new BorderComponent(myGameArea, x+9*30+0.5, y));
-    borderComponents.push(new BorderComponent(myGameArea, x+9*30+0.5, y+30+0.5));
-
-
-
-    /*for (let i = 1; i < 10; i++){
-        const borderComponent = new BorderComponent(myGameArea, x+i*(30+0.5), y);
-        borderComponents.push(borderComponent);
-    }
-    for (let i = 1; i < 10; i++){
-        const borderComponent = new BorderComponent(myGameArea, x, y+i*(30+0.5));
-        borderComponents.push(borderComponent);
-    }
-    for (let i = 1; i < 10; i++){
-        const borderComponent = new BorderComponent(myGameArea, x+i*(30+0.5), y+9*(30+0.5));
-        borderComponents.push(borderComponent);
-    }*/
+    let board = new Board3Players(myGameArea);
+    //console.log(myGameArea);
 }
 
 var myGameArea = {
     canvas : document.createElement("canvas"),
     start : function() {
         this.canvas.width = 500;
-        this.canvas.height = 450;
+        this.canvas.height = 500;
         this.context = this.canvas.getContext("2d");
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+        this.canvas.addEventListener('click', function (){
+            console.log(myGameArea.context);
+        })
     }
+
 }
 
-function component(width, height, color, x, y) {
-    this.width = width;
-    this.height = height;
-    this.x = x;
-    this.y = y;
-    //ctx = myGameArea.context;
-    //ctx.fillStyle = color;
-    //ctx.fillRect(this.x, this.y, this.width, this.height);
+
+function log(m) {
+    $("#log").append(m + "<br />");
 }
+
+function send() {
+    /*$Msg = $("#msg").val();
+    if ($Msg === "") return alert("Textarea is empty");*/
+
+    try {
+        ws.send(JSON.stringify(myGameArea.context.getImageData(0, 0, myGameArea.canvas.width, myGameArea.canvas.height).data));
+        //log('> Sent to server:' + $Msg);
+    } catch (exception) {
+        console.log(exception);
+    }
+    //$Msg.val("");
+}
+
+$("#send").click(send);
+$("#msg").on("keydown", function (event) {
+    console.log(event.keyCode);
+    if (event.keyCode == 13) send();
+});
+$("#quit").click(function () {
+    log("Connection closed");
+    ws.close(); ws = null;
+});
+
 

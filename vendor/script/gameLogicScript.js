@@ -17,11 +17,16 @@ $(document).ready(function () {
 
 });
 
+let board;
+let player;
+let player_opponent;
 
 function startGame() {
     myGameArea.start();
-    let board = new Board3Players(myGameArea);
+    board = new Board(myGameArea);
     //console.log(myGameArea);
+    player = new ActivePlayer(myGameArea, "bottom");
+    player_opponent = new Opponent(myGameArea, "left");
 }
 
 var myGameArea = {
@@ -29,12 +34,46 @@ var myGameArea = {
     start : function() {
         this.canvas.width = 500;
         this.canvas.height = 500;
+        this.componentSize = 40;
         this.context = this.canvas.getContext("2d");
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
-        this.canvas.addEventListener('click', function (){
-            console.log(myGameArea.context);
+        this.interval = setInterval(updateGameArea, 20);
+        window.addEventListener('keydown', function (e) {
+            myGameArea.key = e.key;
         })
+        window.addEventListener('keyup', function (e) {
+            myGameArea.key = false;
+        })
+        this.canvas.addEventListener('click', function (){
+            board.addBottomBorder(myGameArea);
+        })
+    },
+    clear : function(){
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
+
+}
+
+function updateGameArea(){
+    myGameArea.clear();
+    player.playerComponent.speedX = 0;
+    player.playerComponent.speedY = 0;
+    if (myGameArea.key && ((player.getPosition() === "left") || (player.getPosition() === "right")) && myGameArea.key === "ArrowUp") {
+        player.playerComponent.speedY = -2;
+    }
+    if (myGameArea.key && ((player.getPosition() === "left") || (player.getPosition() === "right")) && myGameArea.key === "ArrowDown") {
+        player.playerComponent.speedY = 2;
+    }
+    if (myGameArea.key && ((player.getPosition() === "upper") || (player.getPosition() === "bottom")) && myGameArea.key === "ArrowLeft") {
+        player.playerComponent.speedX = -2;
+    }
+    if (myGameArea.key && ((player.getPosition() === "upper") || (player.getPosition() === "bottom")) && myGameArea.key === "ArrowRight") {
+        player.playerComponent.speedX = 2;
+    }
+    player.playerComponent.newPosition();
+    player.update(myGameArea);
+    player_opponent.update(myGameArea);
+    board.updateBoard(myGameArea);
 
 }
 

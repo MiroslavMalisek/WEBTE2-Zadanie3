@@ -8,4 +8,10 @@ class BorderComponent{
         this.ctx.fillStyle = "grey";
         this.ctx.fillRect(this.x, this.y, this.width, this.height);
     }
+
+    updateComponent(myGameArea){
+        this.ctx = myGameArea.context;
+        this.ctx.fillStyle = "grey";
+        this.ctx.fillRect(this.x, this.y, this.width, this.height);
+    }
 }

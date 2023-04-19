@@ -59,7 +59,7 @@ $n_connections = 0;
 $ws_worker->onWorkerStart = function($ws_worker)
 {   $GLOBALS['userdata']=0;
     // Timer every 5 seconds
-    /*Timer::add(1, function()use($ws_worker)
+    Timer::add(1/30, function()use($ws_worker)
     {
         $n_conn = count($ws_worker->connections);
         // Iterate over connections and send the time
@@ -67,7 +67,7 @@ $ws_worker->onWorkerStart = function($ws_worker)
         {
             $connection->send(generateNumberConnectionsJsonMessage($n_conn));
         }
-    });*/
+    });
 
 
     // Emitted when new connection come

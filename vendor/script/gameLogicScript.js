@@ -3,16 +3,23 @@ let ws;
 $(document).ready(function () {
     ws = new WebSocket("wss://site152.webte.fei.stuba.sk:9000");
 
-    ws.onopen = function () { log("Connection established"); };
-    ws.onerror = function (error) { log("Unknown WebSocket Error " + JSON.stringify(error)); };
+    ws.onopen = function () {
+        console.log("connected");
+        startGame();
+    };
+    ws.onerror = function (error) {
+        console.log("Unknown WebSocket Error " + JSON.stringify(error));
+    };
     ws.onmessage = function (e) {
         var data = JSON.parse(e.data);
-        console.log((data));
+        updateGameArea(data.x, data.y);
         //log("< " + data.msg);
         /*document.getElementById("number").innerHTML = data.n_connections + "<br>";*/
 
     };
-    ws.onclose = function () { log("Connection closed - Either the host or the client has lost connection"); }
+    ws.onclose = function () {
+        console.log("Connection closed - Either the host or the client has lost connection");
+    }
 
 
 });
@@ -25,8 +32,8 @@ function startGame() {
     myGameArea.start();
     board = new Board(myGameArea);
     //console.log(myGameArea);
-    player = new ActivePlayer(myGameArea, "bottom");
-    player_opponent = new Opponent(myGameArea, "left");
+    player = new ActivePlayer(myGameArea, "left");
+    player_opponent = new Opponent(myGameArea, "right");
 }
 
 var myGameArea = {
@@ -37,7 +44,7 @@ var myGameArea = {
         this.componentSize = 40;
         this.context = this.canvas.getContext("2d");
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
-        this.interval = setInterval(updateGameArea, 20);
+        //this.interval = setInterval(updateGameArea, 20);
         window.addEventListener('keydown', function (e) {
             myGameArea.key = e.key;
         })
@@ -45,7 +52,7 @@ var myGameArea = {
             myGameArea.key = false;
         })
         this.canvas.addEventListener('click', function (){
-            board.addBottomBorder(myGameArea);
+            board.addUpperBorder(myGameArea);
         })
     },
     clear : function(){
@@ -54,29 +61,89 @@ var myGameArea = {
 
 }
 
-function updateGameArea(){
+function updateGameArea(opponentX, opponentY){
     myGameArea.clear();
     player.playerComponent.speedX = 0;
     player.playerComponent.speedY = 0;
-    if (myGameArea.key && ((player.getPosition() === "left") || (player.getPosition() === "right")) && myGameArea.key === "ArrowUp") {
-        player.playerComponent.speedY = -2;
+    if (myGameArea.key && (player.getPosition() === "left") && myGameArea.key === "ArrowUp") {
+        if (player.touchesLeftUpperBorder(board.getLeftBorderObstacles()[0])){
+            player.playerComponent.speedY = 0;
+        }else {
+            player.playerComponent.speedY = -2;
+        }
     }
-    if (myGameArea.key && ((player.getPosition() === "left") || (player.getPosition() === "right")) && myGameArea.key === "ArrowDown") {
-        player.playerComponent.speedY = 2;
+    if (myGameArea.key && (player.getPosition() === "left") && myGameArea.key === "ArrowDown") {
+        if (player.touchesLeftBottomBorder(board.getLeftBorderObstacles()[1])){
+            player.playerComponent.speedY = 0;
+        }else {
+            player.playerComponent.speedY = 2;
+        }
     }
-    if (myGameArea.key && ((player.getPosition() === "upper") || (player.getPosition() === "bottom")) && myGameArea.key === "ArrowLeft") {
-        player.playerComponent.speedX = -2;
+    if (myGameArea.key && (player.getPosition() === "right") && myGameArea.key === "ArrowUp") {
+        if (player.touchesRightUpperBorder(board.getRightBorderObstacles()[0])){
+            player.playerComponent.speedY = 0;
+        }else {
+            player.playerComponent.speedY = -2;
+        }
     }
-    if (myGameArea.key && ((player.getPosition() === "upper") || (player.getPosition() === "bottom")) && myGameArea.key === "ArrowRight") {
-        player.playerComponent.speedX = 2;
+    if (myGameArea.key && (player.getPosition() === "right") && myGameArea.key === "ArrowDown") {
+        if (player.touchesRightBottomBorder(board.getRightBorderObstacles()[1])){
+            player.playerComponent.speedY = 0;
+        }else {
+            player.playerComponent.speedY = 2;
+        }
     }
+
+    if (myGameArea.key && (player.getPosition() === "upper") && myGameArea.key === "ArrowLeft") {
+        if (player.touchesUpperLeftBorder(board.getUpperBorderObstacles()[0])){
+            player.playerComponent.speedX = 0;
+        }else {
+            player.playerComponent.speedX = -2;
+        }
+    }
+
+    if (myGameArea.key && (player.getPosition() === "upper") && myGameArea.key === "ArrowRight") {
+        if (player.touchesUpperRightBorder(board.getUpperBorderObstacles()[1])){
+            player.playerComponent.speedX = 0;
+        }else {
+            player.playerComponent.speedX = 2;
+        }
+    }
+
+    if (myGameArea.key && (player.getPosition() === "bottom") && myGameArea.key === "ArrowLeft") {
+        if (player.touchesBottomLeftBorder(board.getBottomBorderObstacles()[0])){
+            player.playerComponent.speedX = 0;
+        }else {
+            player.playerComponent.speedX = -2;
+        }
+    }
+
+    if (myGameArea.key && (player.getPosition() === "bottom") && myGameArea.key === "ArrowRight") {
+        if (player.touchesBottomRightBorder(board.getBottomBorderObstacles()[1])){
+            player.playerComponent.speedX = 0;
+        }else {
+            player.playerComponent.speedX = 2;
+        }
+    }
+
     player.playerComponent.newPosition();
+    sendPlayerPosition(player.getX(), player.getY())
     player.update(myGameArea);
+    player_opponent.playerComponent.x = opponentX;
+    player_opponent.playerComponent.y = opponentY;
     player_opponent.update(myGameArea);
     board.updateBoard(myGameArea);
 
 }
 
+function sendPlayerPosition(x, y){
+    try {
+        ws.send(JSON.stringify({x: x, y: y}));
+    }catch (e){
+        console.log(e);
+    }
+
+}
 
 function log(m) {
     $("#log").append(m + "<br />");

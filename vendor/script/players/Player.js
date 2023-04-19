@@ -18,4 +18,11 @@ class Player{
     update(myGameArea){
         this.playerComponent.updateComponent(myGameArea);
     }
+    
+    getX(){
+        return this.playerComponent.x;
+    }
+    getY(){
+        return this.playerComponent.y;
+    }
 }

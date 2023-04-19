@@ -2,7 +2,7 @@ let ws;
 let board;
 let player;
 let playerPos;
-let player_opponent;
+let players_opponent = [];
 
 $(document).ready(function () {
     ws = new WebSocket("wss://site152.webte.fei.stuba.sk:9000");
@@ -19,11 +19,18 @@ $(document).ready(function () {
         if (data.hasOwnProperty('running')){
             console.log("Game is already running");
         }else if (data.hasOwnProperty('gameOn') && data.gameOn === "started"){
-            startGame(data.position);
+            //console.log(data);
+            data.opponent.forEach(pos => {
+                players_opponent.push(new Opponent(pos, '#dc2f2f'));
+            });
+            startGame();
+        }else if(data.hasOwnProperty('deletePosition')){
+
         }else if (data.hasOwnProperty('gameOn') && data.gameOn === "true"){
-            updateGameArea(data.x, data.y);
+            //console.log(data);
+            updateGameArea(data.opponent);
         }else if (data.hasOwnProperty('yourPosition')){
-            playerPos = data.yourPosition;
+            player = new ActivePlayer(data.yourPosition, '#4bc87f');
         }
         //log("< " + data.msg);
         /*document.getElementById("number").innerHTML = data.n_connections + "<br>";*/
@@ -37,12 +44,16 @@ $(document).ready(function () {
 });
 
 
-function startGame(position) {
+function startGame() {
     myGameArea.start();
     board = new Board(myGameArea);
     //console.log(myGameArea);
-    player = new ActivePlayer(myGameArea, playerPos);
-    player_opponent = new Opponent(myGameArea, position);
+    player.createPlayer(myGameArea);
+    sendPlayerPosition(player.getX(), player.getY())
+    players_opponent.forEach(p => {
+        p.createPlayer(myGameArea);
+    });
+    //console.log(players_opponent);
 }
 
 var myGameArea = {
@@ -70,7 +81,7 @@ var myGameArea = {
 
 }
 
-function updateGameArea(opponentX, opponentY){
+function updateGameArea(opponents){
     myGameArea.clear();
     player.playerComponent.speedX = 0;
     player.playerComponent.speedY = 0;
@@ -138,9 +149,15 @@ function updateGameArea(opponentX, opponentY){
     player.playerComponent.newPosition();
     sendPlayerPosition(player.getX(), player.getY())
     player.update(myGameArea);
-    player_opponent.playerComponent.x = opponentX;
-    player_opponent.playerComponent.y = opponentY;
-    player_opponent.update(myGameArea);
+    players_opponent.forEach(p => {
+        let newOpp = opponents.find(opp => opp.position === p.getPosition());
+        p.playerComponent.x = newOpp.x;
+        p.playerComponent.y = newOpp.y;
+        p.update(myGameArea);
+    })
+    //player_opponent.playerComponent.x = opponentX;
+    //player_opponent.playerComponent.y = opponentY;
+    //player_opponent.update(myGameArea);
     board.updateBoard(myGameArea);
 
 }

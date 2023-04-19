@@ -1,18 +1,30 @@
 let ws;
+let board;
+let player;
+let playerPos;
+let player_opponent;
 
 $(document).ready(function () {
     ws = new WebSocket("wss://site152.webte.fei.stuba.sk:9000");
 
     ws.onopen = function () {
         console.log("connected");
-        startGame();
+        //startGame();
     };
     ws.onerror = function (error) {
         console.log("Unknown WebSocket Error " + JSON.stringify(error));
     };
     ws.onmessage = function (e) {
         var data = JSON.parse(e.data);
-        updateGameArea(data.x, data.y);
+        if (data.hasOwnProperty('running')){
+            console.log("Game is already running");
+        }else if (data.hasOwnProperty('gameOn') && data.gameOn === "started"){
+            startGame(data.position);
+        }else if (data.hasOwnProperty('gameOn') && data.gameOn === "true"){
+            updateGameArea(data.x, data.y);
+        }else if (data.hasOwnProperty('yourPosition')){
+            playerPos = data.yourPosition;
+        }
         //log("< " + data.msg);
         /*document.getElementById("number").innerHTML = data.n_connections + "<br>";*/
 
@@ -24,16 +36,13 @@ $(document).ready(function () {
 
 });
 
-let board;
-let player;
-let player_opponent;
 
-function startGame() {
+function startGame(position) {
     myGameArea.start();
     board = new Board(myGameArea);
     //console.log(myGameArea);
-    player = new ActivePlayer(myGameArea, "left");
-    player_opponent = new Opponent(myGameArea, "right");
+    player = new ActivePlayer(myGameArea, playerPos);
+    player_opponent = new Opponent(myGameArea, position);
 }
 
 var myGameArea = {
@@ -51,9 +60,9 @@ var myGameArea = {
         window.addEventListener('keyup', function (e) {
             myGameArea.key = false;
         })
-        this.canvas.addEventListener('click', function (){
+        /*this.canvas.addEventListener('click', function (){
             board.addUpperBorder(myGameArea);
-        })
+        })*/
     },
     clear : function(){
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);

@@ -41,6 +41,13 @@ $(document).ready(function () {
             players_opponent = players_opponent.filter(player => player.getPosition() !== data.deletePosition);
             board.addBorder(myGameArea, data.deletePosition);
         }
+        if (data.hasOwnProperty('numberPlayersLobby')){
+            actualizeNumberPlayers(data.numberPlayersLobby);
+        }
+        if (data.hasOwnProperty('moveToFirst')){
+            player.setFirst(true);
+            changeToFirst();
+        }
         if (data.hasOwnProperty('gameOn') && data.gameOn === "true"){
             //console.log(data);
             updateGameArea(data.opponent);
@@ -204,9 +211,9 @@ function submitName(){
     }
     document.getElementById('form').style.display = "none";
     if (player.isFirst()){
-        document.getElementById('firstPlayerButtons').style.display = "block";
+        document.getElementById('firstPlayerButtons').style.display = "flex";
     }else {
-        document.getElementById('otherPlayerButtons').style.display = "block";
+        document.getElementById('otherPlayerButtons').style.display = "flex";
     }
 }
 
@@ -218,9 +225,30 @@ function startGameButton(){
     }
 }
 
-function firstPlayer(){
-    document.getElementById('form').style.display = "block";
+function leaveGame(){
+    ws.close();
+    document.getElementById('firstPlayerButtons').style.display = "none";
+    document.getElementById('otherPlayerButtons').style.display = "none";
+    document.getElementById('playerLeft').style.display = "flex";
+
 }
+
+function changeToFirst(){
+    document.getElementById('otherPlayerButtons').style.display = "none";
+    document.getElementById('firstPlayerButtons').style.display = "flex";
+}
+
+function firstPlayer(){
+    document.getElementById('form').style.display = "flex";
+}
+
+function actualizeNumberPlayers(numberPlayersLobby){
+    const collection = document.getElementsByClassName("numberPlayers");
+    for (let i = 0; i < collection.length; i++) {
+        collection[i].innerHTML = "Connected " + numberPlayersLobby + "/4 players";
+    }
+}
+
 
 function log(m) {
     $("#log").append(m + "<br />");

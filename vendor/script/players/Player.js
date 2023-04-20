@@ -59,6 +59,9 @@ class Player{
     isFirst(){
         return this.first;
     }
+    setFirst(first){
+        this.first = first;
+    }
     
     getPosition(){
         return this.position;

@@ -3,13 +3,55 @@ canvas {
     background-color: #f1f1f1;
 }
 
+.form-label{
+    font-size: 20px;
+}
+
+#inputName{
+    margin-bottom: 1rem;
+}
+
+.mb-3{
+    width: 50%;
+    margin: 2rem;
+    padding: 5rem;
+    border: 1px solid grey;
+}
+h2,h4{
+    padding-bottom: 1rem;
+}
 
 #form{
     display: none;
+    justify-content: center;
 }
+
 #firstPlayerButtons{
     display: none;
+    justify-content: center;
+}
+.info{
+    width: 50%;
+    margin: 2rem;
+    padding: 5rem;
+    border: 1px solid grey;
+}
+#startGame{
+    margin-right: 1rem;
 }
 #otherPlayerButtons{
     display: none;
+    justify-content: center;
+}
+#playerLeft{
+    display: none;
+    justify-content: center;
+}
+.info2{
+    display: flex;
+    justify-content: center;
+    width: 50%;
+    margin: 2rem;
+    padding: 5rem;
+    border: 1px solid grey;
 }

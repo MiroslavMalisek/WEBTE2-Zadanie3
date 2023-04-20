@@ -10,22 +10,34 @@
 
 <div id="form">
     <div class="mb-3">
+        <h2>Welcome to the game!</h2>
         <label for="inputName" class="form-label">Enter your nickname:</label>
-        <input type="text" class="form-control" id="inputName">
+        <input type="text" class="form-control" id="inputName" placeholder="Nickname">
+        <button onclick="submitName()" type="button" id="submitName" class="btn btn-primary">Submit Name</button>
     </div>
-    <button onclick="submitName()" type="button" id="submitName" class="btn btn-success">Submit Name</button>
 </div>
 
 <div id="firstPlayerButtons">
-    <p>You are the first in the game</p>
-    <p>You can start the game or wait until 4 players are connected</p>
-    <button onclick="startGameButton()" type="button" id="startGame" class="btn btn-success">Start Game</button>
-    <button type="button" id="leaveFirstGame" class="btn btn-danger">Leave Game</button>
+    <div class="info">
+        <h4 class="numberPlayers">Connected 0/4 players</h4>
+        <p>You are the first player in the game - you can start the game or wait until the game starts automatically</p>
+        <button onclick="startGameButton()" type="button" id="startGame" class="btn btn-success">Start Game</button>
+        <button onclick="leaveGame()" type="button" id="leaveFirstGame" class="btn btn-danger">Leave Game</button>
+    </div>
 </div>
 
 <div id="otherPlayerButtons">
-    <p>Wait until the first player starts the game or 4 players are connected</p>
-    <button type="button" id="leaveOtherGame" class="btn btn-danger">Leave Game</button>
+    <div class="info">
+        <h4 class="numberPlayers">Connected 0/4 players</h4>
+        <p>Wait until the first player starts the game or until the game starts automatically</p>
+        <button onclick="leaveGame()" type="button" id="leaveOtherGame" class="btn btn-danger">Leave Game</button>
+    </div>
+</div>
+
+<div id="playerLeft">
+    <div class="info2">
+        <h2>You left the game</h2>
+    </div>
 </div>
 
 

@@ -39,6 +39,9 @@ class Player
     function isFirst(){
         return $this->first;
     }
+    function setFirst($first){
+        $this->first = $first;
+    }
     function setName($name){
         $this->name = $name;
     }

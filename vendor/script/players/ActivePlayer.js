@@ -1,6 +1,6 @@
 class ActivePlayer extends Player{
     constructor(position, color, first) {
-        console.log("active" + first);
+        //console.log("active" + first);
         super(position, color, first);
     }
 

@@ -1,5 +1,5 @@
 class Player{
-    constructor(position, color) {
+    constructor(position, color, first) {
         if (this.constructor === Player){
             throw new Error("Abstract class");
         }
@@ -10,6 +10,8 @@ class Player{
         this.playerComponent = null;
         this.position = position;
         this.color = color;
+        this.first = first;
+        this.name = null;
     }
     
     createPlayer(myGameArea){
@@ -45,6 +47,17 @@ class Player{
                 break;
         }
         this.playerComponent = new PlayerComponent(myGameArea, this.color, width, height, x, y);
+    }
+    
+    setName(name){
+        this.name = name;
+    }
+    getName(){
+        return this.name;
+    }
+    
+    isFirst(){
+        return this.first;
     }
     
     getPosition(){

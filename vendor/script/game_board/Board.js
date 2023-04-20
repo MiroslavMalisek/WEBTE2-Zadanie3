@@ -52,6 +52,26 @@ class Board{
         //this.borderComponents.push(new BorderComponent(myGameArea, x+5*this.sizeComp+this.gap, y));
          
     }
+
+    addBorder(myGameArea, position){
+        if (position === "bottom"){
+            for (let i = 2; i < 8; i++){
+                this.borderComponents.push(new BorderComponent(myGameArea, this.x+i*(this.sizeComp+this.gap), this.y+9*(this.sizeComp+this.gap)));
+            }
+        }else if (position === "upper"){
+            for (let i = 2; i < 8; i++){
+                this.borderComponents.push(new BorderComponent(myGameArea, this.x+i*(this.sizeComp+this.gap), this.y));
+            }
+        }else if (position === "right"){
+            for (let i = 2; i < 8; i++){
+                this.borderComponents.push(new BorderComponent(myGameArea, this.x+9*(this.sizeComp+this.gap), this.y+i*(this.sizeComp+this.gap)));
+            }
+        }else if (position === "left"){
+            for (let i = 2; i < 8; i++){
+                this.borderComponents.push(new BorderComponent(myGameArea, this.x, this.y+i*(this.sizeComp+this.gap)));
+            }
+        }
+    }
     
     addBottomBorder(myGameArea){
         for (let i = 2; i < 8; i++){

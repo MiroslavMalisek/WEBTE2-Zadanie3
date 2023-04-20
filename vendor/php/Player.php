@@ -6,10 +6,13 @@ class Player
     private $position;
     private $x;
     private $y;
+    private $first;
+    private $name;
 
-    function __construct($connection, $position){
+    function __construct($connection, $position, $first){
         $this->connection = $connection;
         $this->position = $position;
+        $this->first = $first;
     }
 
     function getConnection(){
@@ -32,6 +35,15 @@ class Player
     }*/
     function getPosition(){
         return $this->position;
+    }
+    function isFirst(){
+        return $this->first;
+    }
+    function setName($name){
+        $this->name = $name;
+    }
+    function getName(){
+        return $this->name;
     }
 
 }

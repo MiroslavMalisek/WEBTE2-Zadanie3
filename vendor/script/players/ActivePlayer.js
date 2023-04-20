@@ -1,6 +1,7 @@
 class ActivePlayer extends Player{
-    constructor(position, color) {
-        super(position, color);
+    constructor(position, color, first) {
+        console.log("active" + first);
+        super(position, color, first);
     }
 
     touchesLeftUpperBorder(leftUpperBorder){

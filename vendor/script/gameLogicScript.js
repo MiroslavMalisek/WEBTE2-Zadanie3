@@ -1,7 +1,7 @@
 let ws;
 let board;
 let player;
-let playerPos;
+let spectator = false;
 let players_opponent = [];
 
 $(document).ready(function () {
@@ -16,22 +16,37 @@ $(document).ready(function () {
     };
     ws.onmessage = function (e) {
         var data = JSON.parse(e.data);
-        if (data.hasOwnProperty('running')){
-            console.log("Game is already running");
-        }else if (data.hasOwnProperty('gameOn') && data.gameOn === "started"){
-            //console.log(data);
+        //connection message
+        if (data.hasOwnProperty("first")){
+            player = new ActivePlayer(data.yourPosition, '#4bc87f', data.first);
+            firstPlayer();
+        }
+        if (data.hasOwnProperty('gameOn') && data.gameOn === "started"){
+            document.getElementById('firstPlayerButtons').style.display = "none";
+            document.getElementById('otherPlayerButtons').style.display = "none";
             data.opponent.forEach(pos => {
                 players_opponent.push(new Opponent(pos, '#dc2f2f'));
             });
-            startGame();
-        }else if(data.hasOwnProperty('deletePosition')){
-
-        }else if (data.hasOwnProperty('gameOn') && data.gameOn === "true"){
+            startGame(data.bordersToAdd);
+        }
+        if (data.hasOwnProperty('spectator')){
+            console.log("Game is already running");
+            spectator = true;
+            data.players.forEach(pos => {
+                players_opponent.push(new Opponent(pos, '#dc2f2f'));
+            });
+            startGame(data.bordersToAdd);
+        }
+        if(data.hasOwnProperty('deletePosition')){
+            players_opponent = players_opponent.filter(player => player.getPosition() !== data.deletePosition);
+            board.addBorder(myGameArea, data.deletePosition);
+        }
+        if (data.hasOwnProperty('gameOn') && data.gameOn === "true"){
             //console.log(data);
             updateGameArea(data.opponent);
-        }else if (data.hasOwnProperty('yourPosition')){
+        }/*else if (data.hasOwnProperty('yourPosition')){
             player = new ActivePlayer(data.yourPosition, '#4bc87f');
-        }
+        }*/
         //log("< " + data.msg);
         /*document.getElementById("number").innerHTML = data.n_connections + "<br>";*/
 
@@ -44,12 +59,17 @@ $(document).ready(function () {
 });
 
 
-function startGame() {
+function startGame(bordersToAdd) {
     myGameArea.start();
     board = new Board(myGameArea);
+    bordersToAdd.forEach(border => {
+        board.addBorder(myGameArea, border);
+    });
     //console.log(myGameArea);
-    player.createPlayer(myGameArea);
-    sendPlayerPosition(player.getX(), player.getY())
+    if (!spectator){
+        player.createPlayer(myGameArea);
+        sendPlayerPosition(player.getX(), player.getY());
+    }
     players_opponent.forEach(p => {
         p.createPlayer(myGameArea);
     });
@@ -83,72 +103,74 @@ var myGameArea = {
 
 function updateGameArea(opponents){
     myGameArea.clear();
-    player.playerComponent.speedX = 0;
-    player.playerComponent.speedY = 0;
-    if (myGameArea.key && (player.getPosition() === "left") && myGameArea.key === "ArrowUp") {
-        if (player.touchesLeftUpperBorder(board.getLeftBorderObstacles()[0])){
-            player.playerComponent.speedY = 0;
-        }else {
-            player.playerComponent.speedY = -2;
+    if (!spectator){
+        player.playerComponent.speedX = 0;
+        player.playerComponent.speedY = 0;
+        if (myGameArea.key && (player.getPosition() === "left") && myGameArea.key === "ArrowUp") {
+            if (player.touchesLeftUpperBorder(board.getLeftBorderObstacles()[0])){
+                player.playerComponent.speedY = 0;
+            }else {
+                player.playerComponent.speedY = -2;
+            }
         }
-    }
-    if (myGameArea.key && (player.getPosition() === "left") && myGameArea.key === "ArrowDown") {
-        if (player.touchesLeftBottomBorder(board.getLeftBorderObstacles()[1])){
-            player.playerComponent.speedY = 0;
-        }else {
-            player.playerComponent.speedY = 2;
+        if (myGameArea.key && (player.getPosition() === "left") && myGameArea.key === "ArrowDown") {
+            if (player.touchesLeftBottomBorder(board.getLeftBorderObstacles()[1])){
+                player.playerComponent.speedY = 0;
+            }else {
+                player.playerComponent.speedY = 2;
+            }
         }
-    }
-    if (myGameArea.key && (player.getPosition() === "right") && myGameArea.key === "ArrowUp") {
-        if (player.touchesRightUpperBorder(board.getRightBorderObstacles()[0])){
-            player.playerComponent.speedY = 0;
-        }else {
-            player.playerComponent.speedY = -2;
+        if (myGameArea.key && (player.getPosition() === "right") && myGameArea.key === "ArrowUp") {
+            if (player.touchesRightUpperBorder(board.getRightBorderObstacles()[0])){
+                player.playerComponent.speedY = 0;
+            }else {
+                player.playerComponent.speedY = -2;
+            }
         }
-    }
-    if (myGameArea.key && (player.getPosition() === "right") && myGameArea.key === "ArrowDown") {
-        if (player.touchesRightBottomBorder(board.getRightBorderObstacles()[1])){
-            player.playerComponent.speedY = 0;
-        }else {
-            player.playerComponent.speedY = 2;
+        if (myGameArea.key && (player.getPosition() === "right") && myGameArea.key === "ArrowDown") {
+            if (player.touchesRightBottomBorder(board.getRightBorderObstacles()[1])){
+                player.playerComponent.speedY = 0;
+            }else {
+                player.playerComponent.speedY = 2;
+            }
         }
-    }
 
-    if (myGameArea.key && (player.getPosition() === "upper") && myGameArea.key === "ArrowLeft") {
-        if (player.touchesUpperLeftBorder(board.getUpperBorderObstacles()[0])){
-            player.playerComponent.speedX = 0;
-        }else {
-            player.playerComponent.speedX = -2;
+        if (myGameArea.key && (player.getPosition() === "upper") && myGameArea.key === "ArrowLeft") {
+            if (player.touchesUpperLeftBorder(board.getUpperBorderObstacles()[0])){
+                player.playerComponent.speedX = 0;
+            }else {
+                player.playerComponent.speedX = -2;
+            }
         }
-    }
 
-    if (myGameArea.key && (player.getPosition() === "upper") && myGameArea.key === "ArrowRight") {
-        if (player.touchesUpperRightBorder(board.getUpperBorderObstacles()[1])){
-            player.playerComponent.speedX = 0;
-        }else {
-            player.playerComponent.speedX = 2;
+        if (myGameArea.key && (player.getPosition() === "upper") && myGameArea.key === "ArrowRight") {
+            if (player.touchesUpperRightBorder(board.getUpperBorderObstacles()[1])){
+                player.playerComponent.speedX = 0;
+            }else {
+                player.playerComponent.speedX = 2;
+            }
         }
-    }
 
-    if (myGameArea.key && (player.getPosition() === "bottom") && myGameArea.key === "ArrowLeft") {
-        if (player.touchesBottomLeftBorder(board.getBottomBorderObstacles()[0])){
-            player.playerComponent.speedX = 0;
-        }else {
-            player.playerComponent.speedX = -2;
+        if (myGameArea.key && (player.getPosition() === "bottom") && myGameArea.key === "ArrowLeft") {
+            if (player.touchesBottomLeftBorder(board.getBottomBorderObstacles()[0])){
+                player.playerComponent.speedX = 0;
+            }else {
+                player.playerComponent.speedX = -2;
+            }
         }
-    }
 
-    if (myGameArea.key && (player.getPosition() === "bottom") && myGameArea.key === "ArrowRight") {
-        if (player.touchesBottomRightBorder(board.getBottomBorderObstacles()[1])){
-            player.playerComponent.speedX = 0;
-        }else {
-            player.playerComponent.speedX = 2;
+        if (myGameArea.key && (player.getPosition() === "bottom") && myGameArea.key === "ArrowRight") {
+            if (player.touchesBottomRightBorder(board.getBottomBorderObstacles()[1])){
+                player.playerComponent.speedX = 0;
+            }else {
+                player.playerComponent.speedX = 2;
+            }
         }
-    }
 
-    player.playerComponent.newPosition();
-    sendPlayerPosition(player.getX(), player.getY())
-    player.update(myGameArea);
+        player.playerComponent.newPosition();
+        sendPlayerPosition(player.getX(), player.getY())
+        player.update(myGameArea);
+    }
     players_opponent.forEach(p => {
         let newOpp = opponents.find(opp => opp.position === p.getPosition());
         p.playerComponent.x = newOpp.x;
@@ -169,6 +191,35 @@ function sendPlayerPosition(x, y){
         console.log(e);
     }
 
+}
+
+function submitName(){
+    var name = document.getElementById('inputName').value;
+    player.setName(name);
+    //console.log(player);
+    try {
+        ws.send(JSON.stringify({name: name}));
+    }catch (e) {
+        console.log(e);
+    }
+    document.getElementById('form').style.display = "none";
+    if (player.isFirst()){
+        document.getElementById('firstPlayerButtons').style.display = "block";
+    }else {
+        document.getElementById('otherPlayerButtons').style.display = "block";
+    }
+}
+
+function startGameButton(){
+    try {
+        ws.send(JSON.stringify({startButton: true}));
+    }catch (e) {
+        console.log(e);
+    }
+}
+
+function firstPlayer(){
+    document.getElementById('form').style.display = "block";
 }
 
 function log(m) {
@@ -197,5 +248,6 @@ $("#quit").click(function () {
     log("Connection closed");
     ws.close(); ws = null;
 });
+
 
 

@@ -1,5 +1,5 @@
 class Opponent extends Player{
-    constructor(position, color) {
-        super(position, color);
+    constructor(position, color, first) {
+        super(position, color, first);
     }
 }

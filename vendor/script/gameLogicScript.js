@@ -24,16 +24,16 @@ $(document).ready(function () {
         if (data.hasOwnProperty('gameOn') && data.gameOn === "started"){
             document.getElementById('firstPlayerButtons').style.display = "none";
             document.getElementById('otherPlayerButtons').style.display = "none";
-            data.opponent.forEach(pos => {
-                players_opponent.push(new Opponent(pos, '#dc2f2f'));
+            data.opponents.forEach(opponent => {
+                players_opponent.push(new Opponent(opponent.position, '#dc2f2f', opponent.name, opponent.lives));
             });
             startGame(data.bordersToAdd);
         }
         if (data.hasOwnProperty('spectator')){
             console.log("Game is already running");
             spectator = true;
-            data.players.forEach(pos => {
-                players_opponent.push(new Opponent(pos, '#dc2f2f'));
+            data.players.forEach(p => {
+                players_opponent.push(new Opponent(p.position, '#dc2f2f', p.name, p.lives));
             });
             startGame(data.bordersToAdd);
         }
@@ -75,7 +75,7 @@ function startGame(bordersToAdd) {
     //console.log(myGameArea);
     if (!spectator){
         player.createPlayer(myGameArea);
-        sendPlayerPosition(player.getX(), player.getY());
+        sendPlayerPosition(player.getX(), player.getY(), player.getLivesX(), player.getLivesY());
     }
     players_opponent.forEach(p => {
         p.createPlayer(myGameArea);
@@ -175,13 +175,15 @@ function updateGameArea(opponents){
         }
 
         player.playerComponent.newPosition();
-        sendPlayerPosition(player.getX(), player.getY())
+        sendPlayerPosition(player.getX(), player.getY(), player.getLivesX(), player.getLivesY());
         player.update(myGameArea);
     }
     players_opponent.forEach(p => {
         let newOpp = opponents.find(opp => opp.position === p.getPosition());
         p.playerComponent.x = newOpp.x;
         p.playerComponent.y = newOpp.y;
+        p.playerComponent.xLives = newOpp.xLives;
+        p.playerComponent.yLives = newOpp.yLives;
         p.update(myGameArea);
     })
     //player_opponent.playerComponent.x = opponentX;
@@ -191,9 +193,9 @@ function updateGameArea(opponents){
 
 }
 
-function sendPlayerPosition(x, y){
+function sendPlayerPosition(x, y, xLives, yLives){
     try {
-        ws.send(JSON.stringify({x: x, y: y}));
+        ws.send(JSON.stringify({x: x, y: y, xLives: xLives, yLives: yLives}));
     }catch (e){
         console.log(e);
     }

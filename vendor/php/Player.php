@@ -6,8 +6,11 @@ class Player
     private $position;
     private $x;
     private $y;
+    private $xLives;
+    private $yLives;
     private $first;
     private $name;
+    private $lives = 2;
 
     function __construct($connection, $position, $first){
         $this->connection = $connection;
@@ -30,6 +33,18 @@ class Player
     function getY(){
         return $this->y;
     }
+    function setLivesX($xLives){
+        $this->xLives = $xLives;
+    }
+    function setLivesY($yLives){
+        $this->yLives = $yLives;
+    }
+    function getLivesX(){
+        return $this->xLives;
+    }
+    function getLivesY(){
+        return $this->yLives;
+    }
     /*function setPosition($position){
         $this->position = $position;
     }*/
@@ -47,6 +62,13 @@ class Player
     }
     function getName(){
         return $this->name;
+    }
+
+    function setLives($lives){
+        $this->lives = $lives;
+    }
+    function getLives(){
+        return $this->lives;
     }
 
 }

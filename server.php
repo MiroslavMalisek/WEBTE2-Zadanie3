@@ -57,6 +57,8 @@ $ws_worker->onWorkerStart = function($ws_worker)
                         $opp->position = $p->getPosition();
                         $opp->x = $p->getX();
                         $opp->y = $p->getY();
+                        $opp->xLives = $p->getLivesX();
+                        $opp->yLives = $p->getLivesY();
                         array_push($opponents, $opp);
                     }
                 }
@@ -73,6 +75,8 @@ $ws_worker->onWorkerStart = function($ws_worker)
                     $opp->position = $p->getPosition();
                     $opp->x = $p->getX();
                     $opp->y = $p->getY();
+                    $opp->xLives = $p->getLivesX();
+                    $opp->yLives = $p->getLivesY();
                     array_push($opponents, $opp);
                 }
                 $obj->opponent = $opponents;
@@ -133,7 +137,11 @@ $ws_worker->onWorkerStart = function($ws_worker)
                 $obj->spectator = true;
                 $ps = [];
                 foreach ($GLOBALS['players'] as $player){
-                    array_push($ps, $player->getPosition());
+                    $opp = new stdClass();
+                    $opp->position = $player->getPosition();
+                    $opp->name = $player->getName();
+                    $opp->lives = $player->getLives();
+                    array_push($ps, $opp);
                 }
                 $obj->players = $ps;
                 $obj->bordersToAdd = $GLOBALS['positions'];
@@ -180,6 +188,8 @@ $ws_worker->onWorkerStart = function($ws_worker)
                 if (($GLOBALS['players'][$i]->getConnection()) == $connection){
                     $GLOBALS['players'][$i]->setX($data->x);
                     $GLOBALS['players'][$i]->setY($data->y);
+                    $GLOBALS['players'][$i]->setLivesX($data->xLives);
+                    $GLOBALS['players'][$i]->setLivesY($data->yLives);
                     break;
                 }
             }
@@ -265,10 +275,14 @@ function startGame($connection){
         $opponents = [];
         foreach ($GLOBALS['players'] as $player){
             if ($player->getConnection() !== $connection){
-                array_push($opponents, $player->getPosition());
+                $opp = new stdClass();
+                $opp->position = $player->getPosition();
+                $opp->name = $player->getName();
+                $opp->lives = $player->getLives();
+                array_push($opponents, $opp);
             }
         }
-        $obj->opponent = $opponents;
+        $obj->opponents = $opponents;
         $obj->bordersToAdd = $GLOBALS['positions'];
         $connection->send(json_encode($obj));
     }

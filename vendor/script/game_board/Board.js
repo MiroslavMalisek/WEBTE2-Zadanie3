@@ -10,11 +10,11 @@ class Board{
         //index 0 bude dole vlavo, 1 bude dole vpravo
         this.bottomBorderObstacles = [];
         this.sizeComp = myGameArea.componentSize;
-        this.gap = 0.5;
+        this.gap = myGameArea.gap;
         //x start of border at canvas
-        this.x = 50;
+        this.x = myGameArea.startX;
         //y start of border at canvas
-        this.y = 50;
+        this.y = myGameArea.startY;
         //corners
         this.borderComponents.push(new BorderComponent(myGameArea, this.x, this.y));
         let borderComp = new BorderComponent(myGameArea, this.x+this.sizeComp+this.gap, this.y);

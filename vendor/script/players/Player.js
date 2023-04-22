@@ -3,7 +3,7 @@ class Player{
         if (this.constructor === Player){
             throw new Error("Abstract class");
         }
-        this.gap = 0.5;
+        this.gap = null;
         this.compSize = null;
         //if player left vertical
         //this.playerComponent = new PlayerComponent(myGameArea, this.compSize, 80, 50, 50+4*(this.compSize+this.gap))
@@ -17,6 +17,7 @@ class Player{
     
     createPlayer(myGameArea){
         this.compSize = myGameArea.componentSize;
+        this.gap = myGameArea.gap;
         let width;
         let height;
         let x;

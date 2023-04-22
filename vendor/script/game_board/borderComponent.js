@@ -1,7 +1,7 @@
 class BorderComponent{
     constructor(myGameArea, x, y) {
-        this.width = 40;
-        this.height = 40;
+        this.width = myGameArea.componentSize;
+        this.height = myGameArea.componentSize;
         this.x = x;
         this.y = y;
         this.ctx = myGameArea.context;

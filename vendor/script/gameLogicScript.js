@@ -3,6 +3,7 @@ let board;
 let player;
 let spectator = false;
 let players_opponent = [];
+let ball;
 
 $(document).ready(function () {
     ws = new WebSocket("wss://site152.webte.fei.stuba.sk:9000");
@@ -30,7 +31,6 @@ $(document).ready(function () {
             startGame(data.bordersToAdd);
         }
         if (data.hasOwnProperty('spectator')){
-            console.log("Game is already running");
             spectator = true;
             data.players.forEach(p => {
                 players_opponent.push(new Opponent(p.position, '#dc2f2f', p.name, p.lives));
@@ -49,8 +49,7 @@ $(document).ready(function () {
             changeToFirst();
         }
         if (data.hasOwnProperty('gameOn') && data.gameOn === "true"){
-            //console.log(data);
-            updateGameArea(data.opponent);
+            updateGameArea(data.opponent, data.ball);
         }/*else if (data.hasOwnProperty('yourPosition')){
             player = new ActivePlayer(data.yourPosition, '#4bc87f');
         }*/
@@ -80,7 +79,8 @@ function startGame(bordersToAdd) {
     players_opponent.forEach(p => {
         p.createPlayer(myGameArea);
     });
-    //console.log(players_opponent);
+
+    ball = new Ball(myGameArea);
 }
 
 var myGameArea = {
@@ -89,6 +89,9 @@ var myGameArea = {
         this.canvas.width = 500;
         this.canvas.height = 500;
         this.componentSize = 40;
+        this.gap = 0.5;
+        this.startX = 50;
+        this.startY = 50;
         this.context = this.canvas.getContext("2d");
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
         //this.interval = setInterval(updateGameArea, 20);
@@ -108,7 +111,7 @@ var myGameArea = {
 
 }
 
-function updateGameArea(opponents){
+function updateGameArea(opponents, b){
     myGameArea.clear();
     if (!spectator){
         player.playerComponent.speedX = 0;
@@ -186,10 +189,12 @@ function updateGameArea(opponents){
         p.playerComponent.yLives = newOpp.yLives;
         p.update(myGameArea);
     })
+
     //player_opponent.playerComponent.x = opponentX;
     //player_opponent.playerComponent.y = opponentY;
     //player_opponent.update(myGameArea);
     board.updateBoard(myGameArea);
+    ball.updateBall(myGameArea, b.x, b.y);
 
 }
 

@@ -15,6 +15,9 @@ class Board{
         this.x = myGameArea.startX;
         //y start of border at canvas
         this.y = myGameArea.startY;
+
+        this.bounces = 0;
+
         //corners
         this.borderComponents.push(new BorderComponent(myGameArea, this.x, this.y));
         let borderComp = new BorderComponent(myGameArea, this.x+this.sizeComp+this.gap, this.y);
@@ -104,10 +107,14 @@ class Board{
         return this.bottomBorderObstacles;
     }
     
-    updateBoard(myGameArea){
+    updateBoard(myGameArea, bounces){
         this.borderComponents.forEach((component)=>{
             component.updateComponent(myGameArea);
         });
+        this.bounces = bounces;
+        myGameArea.context.font = "15px Arial";
+        myGameArea.context.fillStyle = 'black';
+        myGameArea.context.fillText("Bounces: " + bounces,385, 485);
 
     }
 }

@@ -32,6 +32,7 @@ $ws_worker->onWorkerStart = function($ws_worker)
     $GLOBALS['positions'] = [new LeftBorder(), new UpperBorder(), new RightBorder(), new BottomBorder()];
     //$GLOBALS['positions'] = ["left", "right", "upper", "bottom"];
     $GLOBALS['gameOn'] = false;
+    $GLOBALS['bounces'] = 0;
     // Timer every 50ms (50fps)
     Timer::add(1/50, function()use($ws_worker)
     {
@@ -62,6 +63,7 @@ $ws_worker->onWorkerStart = function($ws_worker)
                 $ball->x = $GLOBALS['ball']->getX();
                 $ball->y = $GLOBALS['ball']->getY();
                 $obj->ball = $ball;
+                $obj->bounces = $GLOBALS['bounces'];
                 $player->getConnection()->send(json_encode($obj));
             }
             foreach ($GLOBALS['spectators'] as $spectator){
@@ -83,6 +85,7 @@ $ws_worker->onWorkerStart = function($ws_worker)
                 $ball->x = $GLOBALS['ball']->getX();
                 $ball->y = $GLOBALS['ball']->getY();
                 $obj->ball = $ball;
+                $obj->bounces = $GLOBALS['bounces'];
                 $spectator->getConnection()->send(json_encode($obj));
             }
 
@@ -267,6 +270,7 @@ function checkCollisions(){
             $speeds = $border->ballSpeed($GLOBALS['ball']);
             $GLOBALS['ball']->setSpeedX($speeds[0]);
             $GLOBALS['ball']->setSpeedY($speeds[1]);
+            $GLOBALS['bounces'] = $GLOBALS['bounces'] + 1;
             //break;
         }
     }
@@ -275,10 +279,12 @@ function checkCollisions(){
             $speeds = $player->getPosition()->ballSpeedCorner($GLOBALS['ball']);
             $GLOBALS['ball']->setSpeedX($speeds[0]);
             $GLOBALS['ball']->setSpeedY($speeds[1]);
+            $GLOBALS['bounces'] = $GLOBALS['bounces'] + 1;
         }elseif ($player->crashedBall($GLOBALS['ball'])){
             $speeds = $player->ballSpeedPlayer($GLOBALS['ball']);
             $GLOBALS['ball']->setSpeedX($speeds[0]);
             $GLOBALS['ball']->setSpeedY($speeds[1]);
+            $GLOBALS['bounces'] = $GLOBALS['bounces'] + 1;
         }
     }
     $GLOBALS['ball']->newPosition();
@@ -330,5 +336,6 @@ function restoreGame(){
     }
     $GLOBALS['spectators'] = [];
     $GLOBALS['ball'] = null;
+    $GLOBALS['bounces'] = 0;
 }
 ?>

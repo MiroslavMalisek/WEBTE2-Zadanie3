@@ -191,7 +191,7 @@ function updateGameArea(data){
         p.update(myGameArea, newOpp.lives);
     })
 
-    board.updateBoard(myGameArea);
+    board.updateBoard(myGameArea, data.bounces);
     ball.updateBall(myGameArea, data.ball.x, data.ball.y);
 
 }

@@ -38,6 +38,11 @@ $(document).ready(function () {
             startGame(data.bordersToAdd);
         }
         if(data.hasOwnProperty('deletePosition')){
+            if (!spectator) {
+                if (player.getPosition() === data.deletePosition) {
+                    eliminate();
+                }
+            }
             players_opponent = players_opponent.filter(player => player.getPosition() !== data.deletePosition);
             board.addBorder(myGameArea, data.deletePosition);
         }
@@ -49,19 +54,19 @@ $(document).ready(function () {
             changeToFirst();
         }
         if (data.hasOwnProperty('gameOn') && data.gameOn === "true"){
-            updateGameArea(data.opponent, data.ball);
-        }/*else if (data.hasOwnProperty('yourPosition')){
-            player = new ActivePlayer(data.yourPosition, '#4bc87f');
-        }*/
-        //log("< " + data.msg);
-        /*document.getElementById("number").innerHTML = data.n_connections + "<br>";*/
-
+            updateGameArea(data);
+        }
+        if (data.hasOwnProperty('winner')){
+            if(!spectator && (player.getPosition() === data.position)){
+                winnerMe();
+            }else {
+                winnerPlayer(data.winner);
+            }
+        }
     };
     ws.onclose = function () {
         console.log("Connection closed - Either the host or the client has lost connection");
     }
-
-
 });
 
 
@@ -71,7 +76,6 @@ function startGame(bordersToAdd) {
     bordersToAdd.forEach(border => {
         board.addBorder(myGameArea, border);
     });
-    //console.log(myGameArea);
     if (!spectator){
         player.createPlayer(myGameArea);
         sendPlayerPosition(player.getX(), player.getY(), player.getLivesX(), player.getLivesY());
@@ -101,9 +105,6 @@ var myGameArea = {
         window.addEventListener('keyup', function (e) {
             myGameArea.key = false;
         })
-        /*this.canvas.addEventListener('click', function (){
-            board.addUpperBorder(myGameArea);
-        })*/
     },
     clear : function(){
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -111,7 +112,7 @@ var myGameArea = {
 
 }
 
-function updateGameArea(opponents, b){
+function updateGameArea(data){
     myGameArea.clear();
     if (!spectator){
         player.playerComponent.speedX = 0;
@@ -179,22 +180,19 @@ function updateGameArea(opponents, b){
 
         player.playerComponent.newPosition();
         sendPlayerPosition(player.getX(), player.getY(), player.getLivesX(), player.getLivesY());
-        player.update(myGameArea);
+        player.update(myGameArea, data.lives);
     }
     players_opponent.forEach(p => {
-        let newOpp = opponents.find(opp => opp.position === p.getPosition());
+        let newOpp = data.opponent.find(opp => opp.position === p.getPosition());
         p.playerComponent.x = newOpp.x;
         p.playerComponent.y = newOpp.y;
         p.playerComponent.xLives = newOpp.xLives;
         p.playerComponent.yLives = newOpp.yLives;
-        p.update(myGameArea);
+        p.update(myGameArea, newOpp.lives);
     })
 
-    //player_opponent.playerComponent.x = opponentX;
-    //player_opponent.playerComponent.y = opponentY;
-    //player_opponent.update(myGameArea);
     board.updateBoard(myGameArea);
-    ball.updateBall(myGameArea, b.x, b.y);
+    ball.updateBall(myGameArea, data.ball.x, data.ball.y);
 
 }
 
@@ -210,7 +208,6 @@ function sendPlayerPosition(x, y, xLives, yLives){
 function submitName(){
     var name = document.getElementById('inputName').value;
     player.setName(name);
-    //console.log(player);
     try {
         ws.send(JSON.stringify({name: name}));
     }catch (e) {
@@ -256,33 +253,25 @@ function actualizeNumberPlayers(numberPlayersLobby){
     }
 }
 
-
-function log(m) {
-    $("#log").append(m + "<br />");
+function eliminate(){
+    let canvas = document.getElementsByTagName('canvas');
+    canvas[0].style.display = "none";
+    document.getElementById('playerLost').style.display = "flex";
+    ws.close();
 }
 
-function send() {
-    /*$Msg = $("#msg").val();
-    if ($Msg === "") return alert("Textarea is empty");*/
-
-    try {
-        ws.send(JSON.stringify(myGameArea.context.getImageData(0, 0, myGameArea.canvas.width, myGameArea.canvas.height).data));
-        //log('> Sent to server:' + $Msg);
-    } catch (exception) {
-        console.log(exception);
-    }
-    //$Msg.val("");
+function winnerMe(){
+    let canvas = document.getElementsByTagName('canvas');
+    canvas[0].style.display = "none";
+    document.getElementById('infoWinner').innerHTML = "You won!!!!"
+    document.getElementById('winner').style.display = "flex";
 }
 
-$("#send").click(send);
-$("#msg").on("keydown", function (event) {
-    console.log(event.keyCode);
-    if (event.keyCode == 13) send();
-});
-$("#quit").click(function () {
-    log("Connection closed");
-    ws.close(); ws = null;
-});
-
-
+function winnerPlayer(name){
+    let canvas = document.getElementsByTagName('canvas');
+    canvas[0].style.display = "none";
+    document.getElementById('infoWinner').innerHTML = "Player " + name + " won!";
+    document.getElementById('winner').style.display = "flex";
+    ws.close();
+}
 

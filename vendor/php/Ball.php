@@ -15,18 +15,15 @@ class Ball
     private $myBottom;
     private $myLeft;
     private $myRight;
-    private $speedX = 0.5;
-    private $speedY = 0.2;
+    private $startSpeedX = 1;
+    private $startSpeedY = -4;
+    private $speedX;
+    private $speedY;
 
     function __construct(){
         $this->startX = $this->boardX+5*($this->borderComponentSize+$this->gap);
         $this->startY = $this->boardY+5*($this->borderComponentSize+$this->gap);
-        $this->x = $this->startX;
-        $this->y = $this->startY;
-        $this->myTop = $this->y - $this->radius;
-        $this->myLeft = $this->x - $this->radius;
-        $this->myBottom = $this->y + $this->radius;
-        $this->myRight = $this->x + $this->radius;
+        $this->setToCenter();
     }
 
     function newPosition(){
@@ -44,6 +41,18 @@ class Ball
     }
     function setSpeedY($speedY){
         $this->speedY = $speedY;
+    }
+
+    function setToCenter(){
+        $this->x = $this->startX;
+        $this->y = $this->startY;
+        $this->myTop = $this->y - $this->radius;
+        $this->myLeft = $this->x - $this->radius;
+        $this->myBottom = $this->y + $this->radius;
+        $this->myRight = $this->x + $this->radius;
+        $this->speedX = $this->startSpeedX;
+        $this->speedY = $this->startSpeedY;
+
     }
 
     function getX(){

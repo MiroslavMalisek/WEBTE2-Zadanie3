@@ -43,13 +43,16 @@ h2,h4{
     display: none;
     justify-content: center;
 }
-#playerLeft{
+#playerLeft, #playerLost, #winner{
     display: none;
     justify-content: center;
 }
+
 .info2{
     display: flex;
+    flex-direction: column;
     justify-content: center;
+    align-items: center;
     width: 50%;
     margin: 2rem;
     padding: 5rem;

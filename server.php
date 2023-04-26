@@ -31,30 +31,14 @@ $ws_worker->onWorkerStart = function($ws_worker)
     $GLOBALS['spectators'] = [];
     $GLOBALS['positions'] = [new LeftBorder(), new UpperBorder(), new RightBorder(), new BottomBorder()];
     //$GLOBALS['positions'] = ["left", "right", "upper", "bottom"];
-    //lobby, start, playing
     $GLOBALS['gameOn'] = false;
-    // Timer every 30ms (30fps)
+    // Timer every 50ms (50fps)
     Timer::add(1/50, function()use($ws_worker)
     {
 
         if ($GLOBALS['gameOn'] === true){
             checkCollisions();
-            /*foreach($ws_worker->connections as $connection){
-                $obj = new stdClass();
-                $obj->gameOn = "true";
-                $opponents = [];
-                foreach ($GLOBALS['players'] as $player) {
-                    if ($player->getConnection() !== $connection) {
-                        $opp = new stdClass();
-                        $opp->position = $player->getPosition();
-                        $opp->x = $player->getX();
-                        $opp->y = $player->getY();
-                        array_push($opponents, $opp);
-                    }
-                }
-                $obj->opponent = $opponents;
-                $connection->send(json_encode($obj));
-            }*/
+            checkGoal();
             foreach ($GLOBALS['players'] as $player){
                 $obj = new stdClass();
                 $obj->gameOn = "true";
@@ -65,9 +49,12 @@ $ws_worker->onWorkerStart = function($ws_worker)
                         $opp->position = $p->getPosition()->getPosition();
                         $opp->x = $p->getX();
                         $opp->y = $p->getY();
+                        $opp->lives = $p->getLives();
                         $opp->xLives = $p->getLivesX();
                         $opp->yLives = $p->getLivesY();
                         array_push($opponents, $opp);
+                    }else{
+                        $obj->lives = $p->getLives();
                     }
                 }
                 $obj->opponent = $opponents;
@@ -77,7 +64,6 @@ $ws_worker->onWorkerStart = function($ws_worker)
                 $obj->ball = $ball;
                 $player->getConnection()->send(json_encode($obj));
             }
-
             foreach ($GLOBALS['spectators'] as $spectator){
                 $obj = new stdClass();
                 $obj->gameOn = "true";
@@ -87,6 +73,7 @@ $ws_worker->onWorkerStart = function($ws_worker)
                     $opp->position = $p->getPosition()->getPosition();
                     $opp->x = $p->getX();
                     $opp->y = $p->getY();
+                    $opp->lives = $p->getLives();
                     $opp->xLives = $p->getLivesX();
                     $opp->yLives = $p->getLivesY();
                     array_push($opponents, $opp);
@@ -100,30 +87,13 @@ $ws_worker->onWorkerStart = function($ws_worker)
             }
 
         }
-
-        /*foreach ($GLOBALS['players'] as $player){
-
-            echo "x: " .$player->getX()."\n";
-            echo "y: " .$player->getY()."\n";
-        }*/
-
-
-
-        /*echo "x: " . $GLOBALS['players'][0]->getX() . "\n";
-        echo "y: " . $GLOBALS['players'][0]->getY() . "\n";*/
-        //echo "\n";
-        //$n_conn = count($ws_worker->connections);
-        // Iterate over connections and send the time
-        /*foreach($ws_worker->connections as $connection)
-        {
-            $connection->send(generateNumberConnectionsJsonMessage($n_conn));
-        }*/
     });
 
+    //zrychlovanie lopticky
     Timer::add(2, function()use($ws_worker){
         if ($GLOBALS['gameOn'] === true){
-            $GLOBALS['ball']->setSpeedX(($GLOBALS['ball']->getSpeedX() < 0) ? $GLOBALS['ball']->getSpeedX() - 0.1 : $GLOBALS['ball']->getSpeedX() + 0.1);
-            $GLOBALS['ball']->setSpeedY(($GLOBALS['ball']->getSpeedY() < 0) ? $GLOBALS['ball']->getSpeedY() - 0.1 : $GLOBALS['ball']->getSpeedY() + 0.1);
+            $GLOBALS['ball']->setSpeedX(($GLOBALS['ball']->getSpeedX() < 0) ? $GLOBALS['ball']->getSpeedX() - 0.5 : $GLOBALS['ball']->getSpeedX() + 0.1);
+            $GLOBALS['ball']->setSpeedY(($GLOBALS['ball']->getSpeedY() < 0) ? $GLOBALS['ball']->getSpeedY() - 0.5 : $GLOBALS['ball']->getSpeedY() + 0.1);
             $GLOBALS['ball']->newPosition();
         }
     });
@@ -136,14 +106,6 @@ $ws_worker->onWorkerStart = function($ws_worker)
         // Emitted when websocket handshake done
         $connection->onWebSocketConnect = function($connection)
         {
-            //echo "New connection\n";
-
-            //echo count($connection->worker->connections);
-            /*foreach($connection->worker->connections as $connection)
-            {
-                $connection->send(generateNumberConnectionsJsonMessage(count($connection->worker->connections)));
-            }*/
-
             if(count($GLOBALS['players']) === 0) {
                 //this is the first player that connected to game
                 $player = createPlayer($connection, true);
@@ -183,16 +145,7 @@ $ws_worker->onWorkerStart = function($ws_worker)
                 $connection->send(json_encode($obj));
                 sendNoOfPlayersToAllPlayers();
             }
-
-            /*if (count($GLOBALS['players']) > 4){
-                $obj = new stdClass();
-                $obj->running = "true";
-                $connection->send(json_encode($obj));
-            }*/
-
         };
-
-
     };
 
     $ws_worker->onMessage = function($connection, $data)
@@ -222,14 +175,6 @@ $ws_worker->onWorkerStart = function($ws_worker)
                 }
             }
         }
-
-
-
-        //$GLOBALS['userdata']=$data;
-
-        //sendMgsToAll($connection, $data);
-        // Send hello $data
-        //$connection->send(generateNumberConnectionsJsonMessage(count($connection->worker->connections)));
     };
 
     // Emitted when connection closed
@@ -251,21 +196,12 @@ $ws_worker->onWorkerStart = function($ws_worker)
                 if ($GLOBALS['gameOn'] === false) {
                     sendNoOfPlayersToAllPlayers();
                 }
-                //$connection->send(json_encode($obj));
                 break;
             }
         }
-
-        /*if (count($GLOBALS['players']) === 0){
-            $GLOBALS['gameOn'] = false;
-            $GLOBALS['positions'] = [new LeftBorder(), new UpperBorder(), new RightBorder(), new BottomBorder()];
-            $GLOBALS['players'] = [];
-            foreach ($GLOBALS['spectators'] as $spectator){
-                $spectator->getConnection()->close();
-            }
-            $GLOBALS['spectators'] = [];
-            $GLOBALS['ball'] = null;
-        }*/
+        if (count($GLOBALS['players']) === 0){
+            restoreGame();
+        }
     };
 };
 // Run worker
@@ -324,11 +260,75 @@ function startGame($connection){
 }
 
 function checkCollisions(){
+    $GLOBALS['ball']->setSpeedX($GLOBALS['ball']->getSpeedX());
+    $GLOBALS['ball']->setSpeedY($GLOBALS['ball']->getSpeedY());
     foreach ($GLOBALS['positions'] as $border){
-        $speeds = $border->ballCrash($GLOBALS['ball']);
-        $GLOBALS['ball']->setSpeedX($speeds[0]);
-        $GLOBALS['ball']->setSpeedY($speeds[1]);
-        $GLOBALS['ball']->newPosition();
+        if ($border->ballCrashedBorder($GLOBALS['ball'])){
+            $speeds = $border->ballSpeed($GLOBALS['ball']);
+            $GLOBALS['ball']->setSpeedX($speeds[0]);
+            $GLOBALS['ball']->setSpeedY($speeds[1]);
+            //break;
+        }
     }
+    foreach ($GLOBALS['players'] as $player){
+        if ($player->getPosition()->ballCrashedCorner($GLOBALS['ball'])){
+            $speeds = $player->getPosition()->ballSpeedCorner($GLOBALS['ball']);
+            $GLOBALS['ball']->setSpeedX($speeds[0]);
+            $GLOBALS['ball']->setSpeedY($speeds[1]);
+        }elseif ($player->crashedBall($GLOBALS['ball'])){
+            $speeds = $player->ballSpeedPlayer($GLOBALS['ball']);
+            $GLOBALS['ball']->setSpeedX($speeds[0]);
+            $GLOBALS['ball']->setSpeedY($speeds[1]);
+        }
+    }
+    $GLOBALS['ball']->newPosition();
+}
+
+function checkGoal(){
+    for ($i = 0; $i < count($GLOBALS['players']); $i++){
+        $player = $GLOBALS['players'][$i];
+        if ($player->getPosition()->isGoal($GLOBALS['ball'])){
+            $player->setLives($player->getLives() - 1);
+            if ($player->getLives() === 0){
+                eliminatePlayer($player, $i);
+            }else{
+                $GLOBALS['ball']->setToCenter();
+            }
+            break;
+        }
+    }
+
+}
+
+function eliminatePlayer($player, $index){
+    if (count($GLOBALS['players']) === 1){
+        $obj = new stdClass();
+        $obj->winner = $player->getName();
+        $obj->position = $player->getPosition()->getPosition();
+        sendToAllConnections($player->getConnection(), $obj);
+        //$GLOBALS['spectators'][0]->getConnection()->send(json_encode($obj));
+        restoreGame();
+    }else{
+        $obj = new stdClass();
+        $obj->deletePosition = $player->getPosition()->getPosition();
+        array_push($GLOBALS['positions'], $player->getPosition());
+        sendToAllConnections($player->getConnection(), $obj);
+        array_splice($GLOBALS['players'], $index, 1);
+        $GLOBALS['ball']->setToCenter();
+    }
+}
+
+function restoreGame(){
+    $GLOBALS['gameOn'] = false;
+    $GLOBALS['positions'] = [new LeftBorder(), new UpperBorder(), new RightBorder(), new BottomBorder()];
+    foreach ($GLOBALS['players'] as $p){
+        $p->getConnection()->close();
+    }
+    $GLOBALS['players'] = [];
+    foreach ($GLOBALS['spectators'] as $spectator){
+        $spectator->getConnection()->close();
+    }
+    $GLOBALS['spectators'] = [];
+    $GLOBALS['ball'] = null;
 }
 ?>

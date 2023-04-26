@@ -16,7 +16,8 @@ class PlayerComponent{
         this.ctx.font = "20px Arial";
         this.ctx.fillText(this.lives,this.xLives,this.yLives);
     }
-    updateComponent(myGameArea){
+    updateComponent(myGameArea, lives){
+        this.lives = lives;
         this.ctx = myGameArea.context;
         this.ctx.fillStyle = this.color;
         this.ctx.fillRect(this.x, this.y, this.width, this.height);

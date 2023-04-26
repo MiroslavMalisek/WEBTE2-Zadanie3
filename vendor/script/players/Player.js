@@ -26,36 +26,36 @@ class Player{
         let yLives;
         switch (this.position){
             case "left":
-                width = this.compSize;
+                width = 10;
                 height = 80;
-                x = 50;
+                x = 50 + this.compSize - 10;
                 y = 50+4*(this.compSize+this.gap);
-                xLives = x + 15;
+                xLives = x - 20;
                 yLives = y + 45;
                 break;
             case "upper":
                 width = 80;
-                height = this.compSize;
+                height = 10;
                 x = 50+4*(this.compSize+this.gap);
-                y = 50;
+                y = 50 + this.compSize - 10;
                 xLives = x + 35;
-                yLives = y + 25;
+                yLives = y - 10;
                 break;
             case "right":
-                width = this.compSize;
+                width = 10;
                 height = 80;
                 x = 50+9*(this.compSize+this.gap);
                 y = 50+4*(this.compSize+this.gap);
-                xLives = x + 15;
+                xLives = x + 20;
                 yLives = y + 45;
                 break;
             case "bottom":
                 width = 80;
-                height = this.compSize;
+                height = 10;
                 x = 50+4*(this.compSize+this.gap);
                 y = 50+9*(this.compSize+this.gap);
                 xLives = x + 35;
-                yLives = y + 25;
+                yLives = y + 35;
                 break;
         }
         this.playerComponent = new PlayerComponent(myGameArea, this.lives, this.color, width, height, x, y, xLives, yLives);
@@ -86,8 +86,9 @@ class Player{
         return this.position;
     }
 
-    update(myGameArea){
-        this.playerComponent.updateComponent(myGameArea);
+    update(myGameArea, lives){
+        this.playerComponent.updateComponent(myGameArea, lives);
+        this.lives = lives;
     }
     
     getX(){
